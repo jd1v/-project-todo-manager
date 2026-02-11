@@ -1,8 +1,11 @@
 require('dotenv').config();
 const app = require('./app');
+const database = require('./configs/database');
 const logger = require('./utils/logger');
 
 const port = process.env.PORT || 3000;
+const db = database.createDb();
+const url = process.env.DB_URL || 'mongodb://localhost:27017';
 
 (async () => {
    logger.info('Starting Application', {
@@ -10,6 +13,10 @@ const port = process.env.PORT || 3000;
        pid: process.pid
    });
    try {
+       await db.connect(url);
+       logger.info('Database connected successfully', {
+           dbUrl: process.env.DB_URL.replace(/\/\/.*@/, '//***@'),
+       });
        const server = app.listen(port, () => {
            logger.info('HTTP server started', {
                port: process.env.PORT,
@@ -24,6 +31,8 @@ const port = process.env.PORT || 3000;
            });
            await new Promise(resolve => server.close(resolve));
            logger.info('HTTP server closed');
+           await db.disconnect();
+           logger.info('Database disconnected');
            logger.info('Shutdown completed');
            process.exit(0);
        }
