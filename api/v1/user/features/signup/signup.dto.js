@@ -24,22 +24,22 @@ const validIranMobilePrefixes = [
 const sanitizeSignupDTO = z.object({
     name: normalizedString(
         z.string()
+            .trim()
             .min(3)
             .max(30)
             .regex(/^[A-Za-z]+$/)
-            .trim()
     ),
     family: normalizedString(
         z.string()
+            .trim()
             .min(3)
             .max(30)
             .regex(/^[A-Za-z]+$/)
-            .trim()
     ).optional(),
     phone: normalizedString(
         z.string()
-            .regex(/^09\d{9}$/)
             .trim()
+            .regex(/^09\d{9}$/)
             .refine((value) => {
                 const prefix = value.slice(0, 4);
                 return validIranMobilePrefixes.includes(prefix);
@@ -49,24 +49,36 @@ const sanitizeSignupDTO = z.object({
     ),
     email: normalizedString(
         z.string()
+            .trim()
             .min(10)
             .max(100)
             .regex(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z]{2,}$/)
-            .trim()
     ).optional(),
     birthDay: normalizedString(
         z.string()
+            .trim()
             .min(10)
             .max(10)
             .regex(/^(13\d{2}|14\d{2})\/(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])$/)
-            .trim()
     ),
     nationalCode: normalizedString(
         z.string()
+            .trim()
             .min(10)
             .max(10)
             .regex(/^[0-9]+$/)
-            .trim()
+            .refine(code => {
+                if (!/^\d{10}$/.test(code)) return false;
+                const check = +code[9];
+                const sum = code
+                    .split('')
+                    .slice(0, 9)
+                    .reduce((s, d, i) => s + (+d * (10 - i)), 0);
+                const rem = sum % 11;
+                return (rem < 2 && check === rem) || (rem >= 2 && check === 11 - rem);
+            }, {
+                message: "Invalid national code"
+            })
     ).optional()
 }).strict();
 
