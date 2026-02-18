@@ -5,11 +5,15 @@
   "scripts": {
     "dev": "nodemon"
   },
+  "_moduleAliases": {
+    "@utils": "utils"
+  },
   "type": "commonjs",
   "dependencies": {
     "dotenv": "^17.2.4",
     "express": "^5.2.1",
     "jalaali-js": "^1.2.8",
+    "module-alias": "^2.3.4",
     "mongoose": "^9.2.0",
     "winston": "^3.19.0",
     "zod": "^4.3.6"

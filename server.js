@@ -1,3 +1,4 @@
+require('module-alias/register');
 require('dotenv').config();
 const app = require('./app');
 const database = require('./configs/database');
