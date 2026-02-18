@@ -31,9 +31,10 @@ const userSchema = new Schema({
     },
     birthDay: {
         type: String,
+        required: true,
         minlength: 10,
         maxlength: 10,
-        match: /^(13\d{2}|14\d{2}|1500)\/(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])$/,
+        match: /^(13\d{2}|14\d{2})\/(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])$/,
         trim: true,
     },
     nationalCode: {
