@@ -55,8 +55,8 @@ const sanitizeSignupDTO = z.object({
                 message: "Invalid Iranian mobile prefix"
             })
     ),
-    email: z.preprocess(
-        v => v === '' ? undefined : v,
+    email: z.union([
+        z.undefined(),
         normalizedString(
             z.string()
                 .trim()
@@ -64,8 +64,8 @@ const sanitizeSignupDTO = z.object({
                 .max(100)
                 .regex(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z]{2,}$/,
                     "Invalid email address")
-        ).optional()
-    ),
+        )
+    ]),
     birthDay: normalizedString(
         z.string()
             .trim()
@@ -96,14 +96,14 @@ const sanitizeSignupDTO = z.object({
                 message: "User must be at least 10 years old and birth date cannot be in the future"
             })
     ),
-    nationalCode: z.preprocess(
-        v => v === '' ? undefined : v,
+    nationalCode: z.union([
+        z.undefined(),
         normalizedString(
             z.string()
                 .trim()
-                .min(10)
-                .max(10)
-                .regex(/^[0-9]+$/)
+                .min(10,"NationalCode must be at 10 characters")
+                .max(10, "NationalCode must be at 10 characters")
+                .regex(/^[0-9]+$/, "NationalCode must be Numbers")
                 .refine(code => {
                     if (!/^\d{10}$/.test(code)) return false;
                     const check = +code[9];
@@ -116,8 +116,8 @@ const sanitizeSignupDTO = z.object({
                 }, {
                     message: "Invalid national code"
                 })
-        ).optional()
-    )
+        )
+    ])
 }).strict();
 
 module.exports = {
