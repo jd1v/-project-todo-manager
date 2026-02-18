@@ -38,8 +38,6 @@ const sanitizeSignupDTO = z.object({
     ).optional(),
     phone: normalizedString(
         z.string()
-            .min(11)
-            .max(11)
             .regex(/^09\d{9}$/)
             .trim()
             .refine((value) => {
