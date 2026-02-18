@@ -55,13 +55,16 @@ const sanitizeSignupDTO = z.object({
                 message: "Invalid Iranian mobile prefix"
             })
     ),
-    email: normalizedString(
-        z.string()
-            .trim()
-            .min(10)
-            .max(100)
-            .regex(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z]{2,}$/)
-    ).optional(),
+    email: z.preprocess(
+        v => v === '' ? undefined : v,
+        normalizedString(
+            z.string()
+                .trim()
+                .min(10)
+                .max(100)
+                .regex(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z]{2,}$/)
+        ).optional()
+    ),
     birthDay: normalizedString(
         z.string()
             .trim()
@@ -92,25 +95,28 @@ const sanitizeSignupDTO = z.object({
                 message: "User must be at least 10 years old and birth date cannot be in the future"
             })
     ),
-    nationalCode: normalizedString(
-        z.string()
-            .trim()
-            .min(10)
-            .max(10)
-            .regex(/^[0-9]+$/)
-            .refine(code => {
-                if (!/^\d{10}$/.test(code)) return false;
-                const check = +code[9];
-                const sum = code
-                    .split('')
-                    .slice(0, 9)
-                    .reduce((s, d, i) => s + (+d * (10 - i)), 0);
-                const rem = sum % 11;
-                return (rem < 2 && check === rem) || (rem >= 2 && check === 11 - rem);
-            }, {
-                message: "Invalid national code"
-            })
-    ).optional()
+    nationalCode: z.preprocess(
+        v => v === '' ? undefined : v,
+        normalizedString(
+            z.string()
+                .trim()
+                .min(10)
+                .max(10)
+                .regex(/^[0-9]+$/)
+                .refine(code => {
+                    if (!/^\d{10}$/.test(code)) return false;
+                    const check = +code[9];
+                    const sum = code
+                        .split('')
+                        .slice(0, 9)
+                        .reduce((s, d, i) => s + (+d * (10 - i)), 0);
+                    const rem = sum % 11;
+                    return (rem < 2 && check === rem) || (rem >= 2 && check === 11 - rem);
+                }, {
+                    message: "Invalid national code"
+                })
+        ).optional()
+    )
 }).strict();
 
 module.exports = {
