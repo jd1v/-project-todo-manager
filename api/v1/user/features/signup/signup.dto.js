@@ -1,4 +1,5 @@
 const z = require('zod');
+const {toGregorian} = require('jalaali-js');
 
 const normalizeInput = (value) => {
     if (typeof value !== 'string') return value;
@@ -59,7 +60,23 @@ const sanitizeSignupDTO = z.object({
             .trim()
             .min(10)
             .max(10)
-            .regex(/^(13\d{2}|14\d{2})\/(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])$/)
+            .regex(/^(13\d{2}|14\d{2})\/(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])$/,
+                "Invalid birth date format")
+            .refine((value) => {
+                const [jy, jm, jd] = value.split("/").map(Number);
+                const {gy, gm, gd} = toGregorian(jy, jm, jd);
+                const birthDate = new Date(gy, gm - 1, gd);
+                const today = new Date().setHours(0, 0, 0, 0);
+                if (birthDate > today) return false;
+                const tenYearsAgo = new Date(
+                    today.getFullYear() - 10,
+                    today.getMonth(),
+                    today.getDate()
+                );
+                return birthDate <= tenYearsAgo;
+            }, {
+                message: "User must be at least 10 years old and birth date cannot be in the future"
+            })
     ),
     nationalCode: normalizedString(
         z.string()
