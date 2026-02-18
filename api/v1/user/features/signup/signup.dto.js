@@ -34,16 +34,16 @@ const sanitizeSignupDTO = z.object({
             .max(30)
             .regex(/^[A-Za-z]+$/)
     ),
-    family: z.preprocess(
-        v => v === '' ? undefined : v,
+    family: z.union([
+        z.undefined(),
         normalizedString(
             z.string()
                 .trim()
-                .min(3)
+                .min(3, 'Family must be at least 3 characters')
                 .max(30)
-                .regex(/^[A-Za-z]+$/)
-        ).optional()
-    ),
+                .regex(/^[A-Za-z]+$/, 'Family must contain only letters')
+        )
+    ]),
     phone: normalizedString(
         z.string()
             .trim()
@@ -62,7 +62,8 @@ const sanitizeSignupDTO = z.object({
                 .trim()
                 .min(10)
                 .max(100)
-                .regex(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z]{2,}$/)
+                .regex(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z]{2,}$/,
+                    "Invalid email address")
         ).optional()
     ),
     birthDay: normalizedString(
