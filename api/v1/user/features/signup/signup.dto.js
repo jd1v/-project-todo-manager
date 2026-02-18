@@ -53,7 +53,7 @@ const sanitizeSignupDTO = z.object({
         z.string()
             .min(10)
             .max(100)
-            .regex(/^(13\d{2}|14\d{2}|1500)\/(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])$/)
+            .regex(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z]{2,}$/)
             .trim()
     ).optional(),
     birthDay: normalizedString(
