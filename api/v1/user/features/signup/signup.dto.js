@@ -3,7 +3,11 @@ const {toGregorian} = require('jalaali-js');
 
 const normalizeInput = (value) => {
     if (typeof value !== 'string') return value;
-    return value.normalize("NFKC");
+    try {
+        return value.normalize("NFKC");
+    } catch {
+        return value;
+    }
 };
 
 const normalizedString = (schema) =>
@@ -30,13 +34,16 @@ const sanitizeSignupDTO = z.object({
             .max(30)
             .regex(/^[A-Za-z]+$/)
     ),
-    family: normalizedString(
-        z.string()
-            .trim()
-            .min(3)
-            .max(30)
-            .regex(/^[A-Za-z]+$/)
-    ).optional(),
+    family: z.preprocess(
+        v => v === '' ? undefined : v,
+        normalizedString(
+            z.string()
+                .trim()
+                .min(3)
+                .max(30)
+                .regex(/^[A-Za-z]+$/)
+        ).optional()
+    ),
     phone: normalizedString(
         z.string()
             .trim()
@@ -63,17 +70,24 @@ const sanitizeSignupDTO = z.object({
             .regex(/^(13\d{2}|14\d{2})\/(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])$/,
                 "Invalid birth date format")
             .refine((value) => {
-                const [jy, jm, jd] = value.split("/").map(Number);
-                const {gy, gm, gd} = toGregorian(jy, jm, jd);
-                const birthDate = new Date(gy, gm - 1, gd);
-                const today = new Date().setHours(0, 0, 0, 0);
-                if (birthDate > today) return false;
-                const tenYearsAgo = new Date(
-                    today.getFullYear() - 10,
-                    today.getMonth(),
-                    today.getDate()
-                );
-                return birthDate <= tenYearsAgo;
+                try {
+                    const [jy, jm, jd] = value.split("/").map(Number);
+                    const {gy, gm, gd} = toGregorian(jy, jm, jd);
+                    const birthDate = new Date(gy, gm - 1, gd);
+                    const today = new Date().setHours(0, 0, 0, 0);
+
+                    if (birthDate > today) return false;
+
+                    const tenYearsAgo = new Date(
+                        new Date().getFullYear() - 10,
+                        new Date().getMonth(),
+                        new Date().getDate()
+                    );
+
+                    return birthDate <= tenYearsAgo;
+                } catch {
+                    return false;
+                }
             }, {
                 message: "User must be at least 10 years old and birth date cannot be in the future"
             })
