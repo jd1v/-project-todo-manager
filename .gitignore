@@ -1,4 +1,6 @@
 .idea
+.env
+.env.*
 /node_modules
 /logs
 package-lock.json
