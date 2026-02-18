@@ -1,5 +1,3 @@
 const router = require('express').Router();
 
-router.use('/signup', require('./features/signup'));
-
 module.exports = router;
