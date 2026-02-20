@@ -28,26 +28,26 @@ const validIranMobilePrefixes = [
 
 const sanitizeSignupDTO = z.object({
     name: normalizedString(
-        z.string()
+        z.string("name must be a string")
             .trim()
-            .min(3)
-            .max(30)
-            .regex(/^[A-Za-z]+$/)
+            .min(3,"name at least 3 characters")
+            .max(30, "name maximum 30 characters")
+            .regex(/^[A-Za-z]+$/, "name must contain only letters")
     ),
     family: z.union([
         z.undefined(),
         normalizedString(
-            z.string()
+            z.string("family must be a string")
                 .trim()
-                .min(3, 'Family must be at least 3 characters')
-                .max(30)
+                .min(3, 'family at least 3 characters')
+                .max(30, "family maximum 30 characters")
                 .regex(/^[A-Za-z]+$/, 'Family must contain only letters')
         )
     ]),
     phone: normalizedString(
-        z.string()
+        z.string("phone must be a string")
             .trim()
-            .regex(/^09\d{9}$/)
+            .regex(/^09\d{9}$/, "phone format incorrect!")
             .refine((value) => {
                 const prefix = value.slice(0, 4);
                 return validIranMobilePrefixes.includes(prefix);
@@ -58,21 +58,21 @@ const sanitizeSignupDTO = z.object({
     email: z.union([
         z.undefined(),
         normalizedString(
-            z.string()
+            z.string("email must be a string")
                 .trim()
-                .min(10)
-                .max(100)
+                .min(10, "email at least 10 characters")
+                .max(100, "email maximum 100 characters")
                 .regex(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z]{2,}$/,
                     "Invalid email address")
         )
     ]),
     birthDay: normalizedString(
-        z.string()
+        z.string("birthDay must be a string")
             .trim()
-            .min(10)
-            .max(10)
+            .min(10, "birthDay at least 10 characters")
+            .max(10, "birthDay maximum 10 characters")
             .regex(/^(13\d{2}|14\d{2})\/(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])$/,
-                "Invalid birth date format")
+                "Invalid birthDay format")
             .refine((value) => {
                 try {
                     const [jy, jm, jd] = value.split("/").map(Number);
@@ -99,11 +99,11 @@ const sanitizeSignupDTO = z.object({
     nationalCode: z.union([
         z.undefined(),
         normalizedString(
-            z.string()
+            z.string("nationalCode must be a string")
                 .trim()
-                .min(10, "NationalCode must be at 10 characters")
-                .max(10, "NationalCode must be at 10 characters")
-                .regex(/^[0-9]+$/, "NationalCode must be Numbers")
+                .min(10, "nationalCode must be at 10 characters")
+                .max(10, "nationalCode maximum 10 characters")
+                .regex(/^[0-9]+$/, "nationalCode must be Numbers")
                 .refine(code => {
                     if (!/^\d{10}$/.test(code)) return false;
                     const check = +code[9];
@@ -114,12 +114,12 @@ const sanitizeSignupDTO = z.object({
                     const rem = sum % 11;
                     return (rem < 2 && check === rem) || (rem >= 2 && check === 11 - rem);
                 }, {
-                    message: "Invalid national code"
+                    message: "invalid national code"
                 })
         )
     ]),
     password: normalizedString(
-        z.string("Password Must be String")
+        z.string("password Must be String")
             .min(8, "Password must be at least 8 characters")
             .max(128, "Password maximum 128 characters")
             .superRefine((val, ctx) => {
