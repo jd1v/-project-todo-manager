@@ -101,7 +101,7 @@ const sanitizeSignupDTO = z.object({
         normalizedString(
             z.string()
                 .trim()
-                .min(10,"NationalCode must be at 10 characters")
+                .min(10, "NationalCode must be at 10 characters")
                 .max(10, "NationalCode must be at 10 characters")
                 .regex(/^[0-9]+$/, "NationalCode must be Numbers")
                 .refine(code => {
@@ -117,8 +117,41 @@ const sanitizeSignupDTO = z.object({
                     message: "Invalid national code"
                 })
         )
-    ])
-}).strict();
+    ]),
+    password: normalizedString(
+        z.string("Password Must be String")
+            .min(8, "Password must be at least 8 characters")
+            .max(128, "Password maximum 128 characters")
+            .superRefine((val, ctx) => {
+                if (!/[A-Z]/.test(val)) {
+                    ctx.addIssue("Missing uppercase letter");
+                }
+                if (!/[a-z]/.test(val)) {
+                    ctx.addIssue("Missing lowercase letter");
+                }
+                if (!/[0-9]/.test(val)) {
+                    ctx.addIssue("Missing Number");
+                }
+                if (!/[^A-Za-z0-9]/.test(val)) {
+                    ctx.addIssue( "Missing special character");
+                }
+                if (!/^[\x20-\x7E]+$/.test(val)) {
+                    ctx.addIssue("Password can only contain printable ASCII characters");
+                }
+
+            })
+    ),
+    confirmPassword: z.string("Confirm Password Must be String")
+}).superRefine((data, ctx) => {
+    if(data.password !== data.confirmPassword) {
+        ctx.addIssue({
+            code: "custom",
+            path: ["confirmPassword"],
+            message: "Passwords do not match"
+        })
+    }
+    }
+).strict();
 
 module.exports = {
     sanitizeSignupDTO
