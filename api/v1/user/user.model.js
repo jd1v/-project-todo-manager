@@ -44,6 +44,11 @@ const userSchema = new Schema({
         match: /^[0-9]+$/,
         trim: true,
     },
+    passwordHash: {
+        type: String,
+        required: true,
+        select: false,
+    },
     isVerifiedEmail: {
         type: Boolean,
         default: false,
