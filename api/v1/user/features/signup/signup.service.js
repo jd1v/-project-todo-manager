@@ -3,10 +3,11 @@ const repo = require('./signup.repo');
 
 const newUser = async (reqBody) => {
     delete reqBody.confirmPassword;
-    const passwordHashed = await hashPassword(reqBody.password);
+    const passwordHash = await hashedPassword(reqBody.password);
     delete reqBody.password;
     return await repo.createUser({
         ...reqBody,
+        passwordHash,
         isVerifiedEmail: false,
         isVerifiedPhone: false,
         roles: ['USER'],
@@ -16,7 +17,7 @@ const newUser = async (reqBody) => {
 };
 
 
-async function hashPassword(password) {
+async function hashedPassword(password) {
     return await argon2.hash(password, {
         type: argon2.argon2id,
         memoryCost: 2 ** 16,
