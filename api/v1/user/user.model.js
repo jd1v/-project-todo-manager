@@ -21,6 +21,7 @@ const userSchema = new Schema({
         minlength: 11,
         maxlength: 11,
         match: /^[0-9]+$/,
+        unique: true,
         trim: true,
     },
     email: {
@@ -28,6 +29,8 @@ const userSchema = new Schema({
         minlength: 10,
         maxlength: 100,
         match: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z]{2,}$/,
+        unique: true,
+        trim: true,
     },
     birthDay: {
         type: String,
@@ -42,6 +45,7 @@ const userSchema = new Schema({
         minlength: 10,
         maxlength: 10,
         match: /^[0-9]+$/,
+        unique: true,
         trim: true,
     },
     passwordHash: {
