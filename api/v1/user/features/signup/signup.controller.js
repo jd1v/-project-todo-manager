@@ -6,7 +6,7 @@ const logger = require('@utils/logger');
 const newUser = async (req, res) => {
     try {
         const cleanBody = dto.sanitizeSignupDTO.parse(req.body);
-        const result = service.newUser(cleanBody);
+        const result = await service.newUser(cleanBody);
     } catch (err) {
         if (err instanceof ZodError) {
             logger.warn("Signup validation failed", {
