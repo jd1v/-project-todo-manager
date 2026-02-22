@@ -29,7 +29,7 @@ const newUser = async (safeData) => {
             nationalCode: safeInformation.nationalCode,
         })
         throw new ConflictError(
-            "CONFLICATE_ERROR",
+            "CONFLICT_ERROR",
             409,
             "DUPLICATE_FIELD_ERROR",
             {
@@ -54,6 +54,7 @@ const newUser = async (safeData) => {
             layar: "service",
             method: "POST",
             path: "signup",
+            errors: error,
             safeInformation
         });
         throw error;

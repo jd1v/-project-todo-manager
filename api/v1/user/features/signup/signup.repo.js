@@ -1,8 +1,25 @@
 const model = require('@v1user/user.model');
+const { isDuplicateKeyError } = require('@errors/infrastructure/database/is-duplicate-key-error');
+const ConflictError = require('@errors/ConflictError');
 
 const createUser = async (data) => {
-    // noinspection JSCheckFunctionSignatures
-    return await model.create(data);
+    try {
+        // noinspection JSCheckFunctionSignatures
+        return model.create(data);
+    } catch (error) {
+        if (isDuplicateKeyError(error)) {
+            throw new ConflictError(
+                "CONFLICT_ERROR",
+                409,
+                "RACE_CONDITIONAL_ERROR",
+                {
+                    layer: "repo",
+                    error: error.message,
+                }
+            );
+        }
+        throw error;
+    }
 }
 
 const existPhone = async (phone) => {
