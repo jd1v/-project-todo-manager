@@ -13,10 +13,13 @@ const existEmail = async (email) => {
     return !!(await model.exists({email}));
 }
 
-const nationalCode = async (nationalCode) => {
+const existNationalCode = async (nationalCode) => {
     return !!(await model.exists({nationalCode}));
 }
 
 module.exports = {
     createUser,
+    existPhone,
+    existEmail,
+    existNationalCode,
 }

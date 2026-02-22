@@ -1,8 +1,8 @@
 const AppError = require('./AppError');
 
-class ConflicateError extends AppError {
+class ConflictError extends AppError {
     constructor(
-        message = "ConflicateError",
+        message = "ConflictError",
         statusCode = 409,
         code = "Duplicate field",
         details = null) {
@@ -10,4 +10,4 @@ class ConflicateError extends AppError {
     }
 }
 
-module.exports = ConflicateError;
+module.exports = ConflictError;

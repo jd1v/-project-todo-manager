@@ -8,7 +8,8 @@
   "_moduleAliases": {
     "@utils": "utils",
     "@v1user": "api/v1/user",
-    "@errors": "errors"
+    "@errors": "errors",
+    "@configs": "configs"
   },
   "type": "commonjs",
   "dependencies": {
