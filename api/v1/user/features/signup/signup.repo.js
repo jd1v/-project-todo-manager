@@ -1,6 +1,7 @@
 const model = require('@v1user/user.model');
 const { isDuplicateKeyError } = require('@errors/infrastructure/database/is-duplicate-key-error');
 const ConflictError = require('@errors/ConflictError');
+const logger = require('@utils/logger');
 
 const createUser = async (data) => {
     try {
@@ -8,6 +9,11 @@ const createUser = async (data) => {
         return model.create(data);
     } catch (error) {
         if (isDuplicateKeyError(error)) {
+            logger.error("SequelizeUniqueConstraintError", {
+                errors: error,
+                code: error.code,
+                message: "Conflict UniqueConstraintError",
+            });
             throw new ConflictError(
                 "CONFLICT_ERROR",
                 409,
